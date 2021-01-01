@@ -4,11 +4,10 @@ import { Link } from "react-router-dom"
 import {useAuth} from '../contexts/AuthContext'
 
 
-const Signup = (props) => {
+const Login = (props) => {
     const emailRef = useRef()
     const passwordRef = useRef()
-    const passwordConfirmRef = useRef()
-    const {signup} = useAuth()
+    const {login} = useAuth()
     
     const [_error, setError] = useState('')
     const [_msg, setMsg] = useState('')
@@ -16,15 +15,13 @@ const Signup = (props) => {
 
     async function handleSubmit(event){
         event.preventDefault()
-        if (passwordRef.current.value !== passwordConfirmRef.current.value){
-            return setError("Passwords do not match")
-        }
+
         try{
             setMsg("")
             setError("")
             setLoading(true)
             
-            let resp_json = await signup(emailRef.current.value, passwordRef.current.value)
+            let resp_json = await login(emailRef.current.value, passwordRef.current.value)
             if (resp_json["type"] === 'error'){
                 setError(resp_json['msg'])
             }
@@ -33,7 +30,7 @@ const Signup = (props) => {
             }
         }
         catch{
-            setError("Failed to create account")
+            setError("Failed to sign in")
         }
         setLoading(false)
     }
@@ -42,7 +39,7 @@ const Signup = (props) => {
         <div >
             <Card>
                 <Card.Body>
-                    <h2 className="text-center mb-4">Sign Up</h2>
+                    <h2 className="text-center mb-4">Log In</h2>
                     { _error && 
                     <Alert variant="danger">
                         {_error}
@@ -62,23 +59,19 @@ const Signup = (props) => {
                             <Form.Label>Password</Form.Label>
                             <Form.Control type="password" ref={passwordRef} required></Form.Control>
                         </Form.Group>
-                        <Form.Group id="password-confirm">
-                            <Form.Label>Password Confirmation</Form.Label>
-                            <Form.Control type="password" ref={passwordConfirmRef} required></Form.Control>
-                        </Form.Group>
                         <Button 
                             className="w-100" 
                             type="submit"
                             disabled={_loading}
-                            >Sign Up</Button>
+                            >Log In</Button>
                     </Form>
                 </Card.Body>
             </Card>
             <div className = "w-100 text-center mt-2">
-                Already have and account? <Link to="/login">Log in</Link>
+                Don't have an account? <Link to="/signup">Sign Up</Link>
             </div>
         </div>
     )
 }
 
-export default Signup
+export default Login
