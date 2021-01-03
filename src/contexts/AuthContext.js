@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
+import { useHistory } from "react-router-dom"
 
 const AuthContext = React.createContext()
 
@@ -16,6 +17,7 @@ export function useAuth() {
 export function AuthProvider ( { children }) {
    const [_token, setToken] = useState()
    const [_id, setID] = useState()
+   const history = useHistory()
    
     async function signup(email, password){
         let url = "http://localhost:5000/api/signup"
@@ -53,6 +55,16 @@ export function AuthProvider ( { children }) {
         setToken("")
         setID("")
         window.localStorage.removeItem('accessToken')
+        history.push('/')
+    }
+
+    async function verify(){
+        if (_token){
+            const token = window.localStorage.getItem('accessToken')
+            let jwt_decode = decodeToken(token)
+            console.log(jwt_decode)
+        }
+        return false
     }
 
     useEffect (() =>{
@@ -73,7 +85,8 @@ export function AuthProvider ( { children }) {
        _token,
        signup,
        login,
-       logout
+       logout,
+       verify
    }
 
     return (

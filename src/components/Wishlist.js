@@ -1,15 +1,39 @@
 import React, {useState, useEffect} from "react"
-import { Container } from "react-bootstrap";
+import { Container, Button } from "react-bootstrap"
 import {useAuth} from '../contexts/AuthContext'
 
 const Wishlist = (props) => {
-    const {_id, _token, logout} = useAuth()
+    const [error, setError] = useState('')
+    const [verified, setVerified] = useState(false)
+    const {_id, _token, logout, verify} = useAuth()
     
+
+    function handleLogout() {
+        setError('')
+        try{
+            logout()
+        }
+        catch {
+            setError('Failed to log out')
+        }
+    }
+
+    // const provideAccess = async () =>{
+    //     let resp_json = await verify()
+    // }
+
+    // useEffect (() =>{
+    //     provideAccess()
+    // }, [])
+
     return (
         <Container>
             Hello
             <div>{_id}</div>
             <div>{_token}</div>
+            <Button variant="link" onClick={handleLogout}>
+                Log Out
+            </Button>
         </Container>
     )
 }
