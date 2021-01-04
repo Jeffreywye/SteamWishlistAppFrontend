@@ -22,10 +22,10 @@ const Wishlist = (props) => {
     //     let resp_json = await verify()
     // }
 
-    // useEffect (() =>{
-    //     provideAccess()
-    // }, [])
-
+    useEffect (() =>{
+        console.log("WishList on Mount")
+    }, [])
+    console.log('Wishlist rendered')
     return (
         <Container>
             Hello

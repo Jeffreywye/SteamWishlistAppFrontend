@@ -48,6 +48,7 @@ export function AuthProvider ( { children }) {
         let decodedToken = decodeToken(data['access_token'])
         setID(decodedToken['identity'])
         window.localStorage.setItem('accessToken',data['access_token'] )
+        window.localStorage.setItem('refreshToken', data['refresh_token'])
         return data 
     }
 
@@ -55,19 +56,67 @@ export function AuthProvider ( { children }) {
         setToken("")
         setID("")
         window.localStorage.removeItem('accessToken')
+        window.localStorage.removeItem('refreshToken')
         history.push('/')
     }
 
+    async function refreshToken(token){
+        let url = "http://localhost:5000/token/refresh"
+        let response = await fetch(url ,{
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer '+token 
+            }
+        })
+        let data = await response.json()
+        setToken(data['access_token'])
+        window.localStorage.setItem('accessToken',data['access_token'] )
+        console.log("set new token from refresh")
+    }
+
     async function verify(){
-        if (_token){
-            const token = window.localStorage.getItem('accessToken')
+        const token = window.localStorage.getItem('accessToken')
+        console.log("Called Verify")
+        console.log(_token)
+        console.log(_id)
+        // check if token is available
+        if (token){
             let jwt_decode = decodeToken(token)
-            console.log(jwt_decode)
+            if (Date.now() >= jwt_decode['exp']*1000){
+                // access expires
+                let refresh_token = window.localStorage.getItem('refreshToken')
+                if (refresh_token){
+                    // refresh token found
+                    let refresh_decode = decodeToken(refresh_token)
+                    if (Date.now() >= refresh_decode['exp']*1000){
+                        // refresh expired
+                        console.log('refresh expired')
+                        window.localStorage.removeItem('accessToken')
+                        window.localStorage.removeItem('refreshToken')
+                    }
+                    else {
+                        // refresh did not expire, so get a new token
+                        await refreshToken(refresh_token)
+                        return true
+                    }
+                }
+                else{
+                    // no refresh token to be found
+                    window.localStorage.removeItem('accessToken')
+                }
+            }
+            else{
+                // access did not expire
+                return true
+            }
         }
         return false
     }
 
     useEffect (() =>{
+        console.log("Auth Context Effect")
         const token = window.localStorage.getItem('accessToken')
         let decodedToken = decodeToken(token)
         setToken(token)
@@ -75,6 +124,7 @@ export function AuthProvider ( { children }) {
 
 
         return function cleanup(){
+            console.log("Auth States cleared")
             setToken("")
             setID("")
         }
@@ -87,8 +137,8 @@ export function AuthProvider ( { children }) {
        login,
        logout,
        verify
-   }
-
+    }
+    console.log("AuthContext Rendered")
     return (
         <AuthContext.Provider value={value}>
             {children}
