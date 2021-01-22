@@ -18,10 +18,6 @@ const Wishlist = (props) => {
         }
     }
 
-    // const provideAccess = async () =>{
-    //     let resp_json = await verify()
-    // }
-
     useEffect (() =>{
         console.log("WishList on Mount")
     }, [])
