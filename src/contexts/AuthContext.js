@@ -115,6 +115,18 @@ export function AuthProvider ( { children }) {
         return false
     }
 
+    async function getWishlist(){
+
+    }
+    
+    async function remFromList(){
+
+    }
+
+    async function addToList(){
+
+    }
+
     useEffect (() =>{
         console.log("Auth Context Effect")
         const token = window.localStorage.getItem('accessToken')
@@ -136,7 +148,10 @@ export function AuthProvider ( { children }) {
        signup,
        login,
        logout,
-       verify
+       verify,
+       getWishlist,
+       remFromList,
+       addToList
     }
     console.log("AuthContext Rendered")
     return (
