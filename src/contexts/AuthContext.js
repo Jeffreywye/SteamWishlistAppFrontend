@@ -116,7 +116,18 @@ export function AuthProvider ( { children }) {
     }
 
     async function getWishlist(){
-
+        let url = "http://localhost:5000/api/getWishlist"
+        const token = window.localStorage.getItem('accessToken')
+        let access = await verify()
+        ret = {}
+        ret['status'] = false
+        ret['data'] = 'Login expired, please log in again'
+        if (access){
+            
+        }
+        else{
+            return ret
+        }
     }
     
     async function remFromList(){
