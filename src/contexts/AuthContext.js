@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useHistory } from "react-router-dom"
+import { MDBInput } from 'mdbreact';
 
 const AuthContext = React.createContext()
 
@@ -123,11 +124,56 @@ export function AuthProvider ( { children }) {
         ret['status'] = false
         ret['data'] = 'Login expired, please log in again'
         if (access){
+            let response = await fetch(url ,{
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer '+_token 
+                }
+            })
+            if (response.status == 200){
+                json = await response.json()
+                ret['status'] = true
+                data = {}
+                data['columns'] = [
+                    {
+                        label: 'Name',
+                        field: 'name',
+                        sort: 'asc'
+                    },{
+                        label: 'AppID',
+                        field: 'appID',
+                        sort: 'asc'
+                    },{
+                        label: 'Init Price',
+                        field: 'init_price',
+                        sort: 'asc'
+                    },{
+                        label: 'Price Now',
+                        field: 'final_price',
+                        sort: 'asc'
+                    },{
+                        label: 'Discount Percent',
+                        field: 'discount',
+                        sort: 'asc'
+                    },{
+                        label: 'Remove',
+                        field: 'check'
+                    }]
+                for (let i = 0; i < json.length; i++) {
+                    let id = json[i]['appID']
+                    json[i]["check"] = <MDBInput label="Remove" type="checkbox" id= {id.toString()} />
+                }
+                data['rows'] = json
+                ret['data'] = data
+            }
+            else{
+                ret['data'] = "Error retrieving data"
+            }
             
         }
-        else{
-            return ret
-        }
+        return ret
     }
     
     async function remFromList(){
