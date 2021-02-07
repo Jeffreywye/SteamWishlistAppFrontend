@@ -74,14 +74,14 @@ export function AuthProvider ( { children }) {
         let data = await response.json()
         setToken(data['access_token'])
         window.localStorage.setItem('accessToken',data['access_token'] )
-        console.log("set new token from refresh")
+        // console.log("set new token from refresh")
     }
 
     async function verify(){
         const token = window.localStorage.getItem('accessToken')
-        console.log("Called Verify")
-        console.log(_token)
-        console.log(_id)
+        // console.log("Called Verify")
+        // console.log(_token)
+        // console.log(_id)
         // check if token is available
         if (token){
             let jwt_decode = decodeToken(token)
@@ -93,7 +93,7 @@ export function AuthProvider ( { children }) {
                     let refresh_decode = decodeToken(refresh_token)
                     if (Date.now() >= refresh_decode['exp']*1000){
                         // refresh expired
-                        console.log('refresh expired')
+                        // console.log('refresh expired')
                         window.localStorage.removeItem('accessToken')
                         window.localStorage.removeItem('refreshToken')
                     }
@@ -120,7 +120,7 @@ export function AuthProvider ( { children }) {
         let url = "http://localhost:5000/api/getWishlist"
         const token = window.localStorage.getItem('accessToken')
         let access = await verify()
-        ret = {}
+        let ret = {}
         ret['status'] = false
         ret['data'] = 'Login expired, please log in again'
         if (access){
@@ -133,9 +133,9 @@ export function AuthProvider ( { children }) {
                 }
             })
             if (response.status == 200){
-                json = await response.json()
+                let json = await response.json()
                 ret['status'] = true
-                data = {}
+                let data = {}
                 data['columns'] = [
                     {
                         label: 'Name',
@@ -157,14 +157,7 @@ export function AuthProvider ( { children }) {
                         label: 'Discount Percent',
                         field: 'discount',
                         sort: 'asc'
-                    },{
-                        label: 'Remove',
-                        field: 'check'
                     }]
-                for (let i = 0; i < json.length; i++) {
-                    let id = json[i]['appID']
-                    json[i]["check"] = <MDBInput label="Remove" type="checkbox" id= {id.toString()} />
-                }
                 data['rows'] = json
                 ret['data'] = data
             }
@@ -185,7 +178,7 @@ export function AuthProvider ( { children }) {
     }
 
     useEffect (() =>{
-        console.log("Auth Context Effect")
+        // console.log("Auth Context Effect")
         const token = window.localStorage.getItem('accessToken')
         let decodedToken = decodeToken(token)
         setToken(token)
@@ -193,7 +186,7 @@ export function AuthProvider ( { children }) {
 
 
         return function cleanup(){
-            console.log("Auth States cleared")
+            // console.log("Auth States cleared")
             setToken("")
             setID("")
         }
@@ -210,7 +203,7 @@ export function AuthProvider ( { children }) {
        remFromList,
        addToList
     }
-    console.log("AuthContext Rendered")
+    // console.log("AuthContext Rendered")
     return (
         <AuthContext.Provider value={value}>
             {children}
