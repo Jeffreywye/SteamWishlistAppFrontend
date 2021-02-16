@@ -135,31 +135,31 @@ export function AuthProvider ( { children }) {
             if (response.status == 200){
                 let json = await response.json()
                 ret['status'] = true
-                let data = {}
-                data['columns'] = [
-                    {
-                        label: 'Name',
-                        field: 'name',
-                        sort: 'asc'
-                    },{
-                        label: 'AppID',
-                        field: 'appID',
-                        sort: 'asc'
-                    },{
-                        label: 'Init Price',
-                        field: 'init_price',
-                        sort: 'asc'
-                    },{
-                        label: 'Price Now',
-                        field: 'final_price',
-                        sort: 'asc'
-                    },{
-                        label: 'Discount Percent',
-                        field: 'discount',
-                        sort: 'asc'
-                    }]
-                data['rows'] = json
-                ret['data'] = data
+                // let data = {}
+                // data['columns'] = [
+                //     {
+                //         label: 'Name',
+                //         field: 'name',
+                //         sort: 'asc'
+                //     },{
+                //         label: 'AppID',
+                //         field: 'appID',
+                //         sort: 'asc'
+                //     },{
+                //         label: 'Init Price',
+                //         field: 'init_price',
+                //         sort: 'asc'
+                //     },{
+                //         label: 'Price Now',
+                //         field: 'final_price',
+                //         sort: 'asc'
+                //     },{
+                //         label: 'Discount Percent',
+                //         field: 'discount',
+                //         sort: 'asc'
+                //     }]
+                // data['rows'] = json
+                ret['data'] = json
             }
             else{
                 ret['data'] = "Error retrieving data"

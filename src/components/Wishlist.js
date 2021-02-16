@@ -1,14 +1,14 @@
 import React, {useState, useEffect} from "react"
 import { Container, Button } from "react-bootstrap"
 import {useAuth} from '../contexts/AuthContext'
-import { MDBDataTableV5} from 'mdbreact'
+import { MDBDataTableV5, MDBBtn} from 'mdbreact'
 
 const Wishlist = (props) => {
-    const [_data, setData] = useState(null)
+    const [_data, setData] = useState("")
     const [_error, setError] = useState('')
     const [_loading, setLoading] = useState(true)
     const {logout, getWishlist, remFromList, addToList  } = useAuth()
-    const [_checklist, setChecklist] = useState(new Set())
+    const [_delete, setDelete] = useState(null)
 
     function handleLogout() {
         setError('')
@@ -20,54 +20,58 @@ const Wishlist = (props) => {
         }
     }
 
-    function removeGames(event){
-        event.preventDefault()
-        console.log(_checklist);
+    function toggleToSet(event){
+        console.log(_data)
+        console.log(event.target.attributes)
+        var id = parseInt(event.target.attributes['data-id'].nodeValue, 10)
+        setDelete(id)
+        setLoading(true)
     }
-
-    function getCheckBox(e){
-        if (e['checked'] && !_checklist.has(e["appID"])){
-            setChecklist(_checklist.add(e["appID"]))
-        }
-        else if(!e['checked'] && _checklist.has(e['appID'])){
-            setChecklist(()=>{
-              let clone = cloneSet(_checklist)
-              if (clone.delete(e['appID'])){
-                return clone
-              }
-              else{
-                return _checklist
-              }
-            })
-        }
-    }
-
-    function getAllCheckBoxes(e){
-        let set = new Set()
-        if (e.length > 0 && e[0]['checked']){
-            e.forEach(element => {
-                set.add(element['appID'])
-            })
-        }
-        setChecklist(set)
         
-    }
 
-    const cloneSet = (set) => {
-        const ret = new Set()
-        for (let item of set){
-            ret.add(item)
-        }
-        return ret
+    const createDataTemplate = () => {
+        let data = {}
+        data['columns'] = [
+            {
+                label: 'Name',
+                field: 'name',
+                sort: 'asc'
+            },{
+                label: 'AppID',
+                field: 'appID',
+                sort: 'asc'
+            },{
+                label: 'Init Price',
+                field: 'init_price',
+                sort: 'asc'
+            },{
+                label: 'Price Now',
+                field: 'final_price',
+                sort: 'asc'
+            },{
+                label: 'Discount Percent',
+                field: 'discount',
+                sort: 'asc'
+            },{
+                label: 'Remove',
+                field: "rem"
+            }]
+        data['rows'] = []
+        return data
     }
 
     useEffect (() =>{
-        console.log("WishList on Mount")
+        // console.log("WishList on Mount")
         const getList = async () =>{
             const json = await getWishlist()
             if (json['status']){
-                setData(json['data'])
-                console.log(json['data'])
+                let data = createDataTemplate()
+                for (let i = 0; i < json['data'].length; i++) {
+                    json['data'][i]['rem'] = <MDBBtn color='primary' onClick={toggleToSet} data-id={json['data'][i]['appID']}>remove</MDBBtn>
+                }
+                data['rows'] = json['data']
+                setData(data)
+                // console.log(data)
             }
             else {
 
@@ -76,6 +80,22 @@ const Wishlist = (props) => {
         }
         getList()
     }, [])
+
+    useEffect (() => {
+        console.log("effect")
+        console.log(_data)
+        if (_delete !== null){
+            console.log("must del " + _delete.toString())
+            let data = createDataTemplate()
+            data['rows'] = _data['rows'].filter((val, index, arr) =>{
+                return _delete !== val['appID']
+            })
+            setData(data)
+
+            setDelete(null)
+            setLoading(false)
+        }
+    }, [_delete])
     
 
 
@@ -86,16 +106,7 @@ const Wishlist = (props) => {
             }
             {!_loading && 
             <div>
-                <Button variant="outline-primary" onClick={removeGames}>
-                    Remove
-                </Button>
                 <MDBDataTableV5
-                    checkbox
-                    headCheckboxID='id5'
-                    bodyCheckboxID='checkboxes5'
-                    multipleCheckboxes
-                    getValueCheckBox={getCheckBox}
-                    getValueAllCheckBoxes={getAllCheckBoxes}
                     data={_data}
                 />
                 <Button variant="link" onClick={handleLogout}>

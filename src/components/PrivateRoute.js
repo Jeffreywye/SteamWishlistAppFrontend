@@ -7,7 +7,7 @@ const PrivateRoute = ({component: Component,  ...rest }) => {
     const [_loading, setLoading] = useState(true)
     const {verify} = useAuth()
     
-    console.log("Private Route Render")
+    // console.log("Private Route Render")
     useEffect (() =>{
         const checkAuthorization = async () =>{
             const result = await verify()
@@ -15,7 +15,7 @@ const PrivateRoute = ({component: Component,  ...rest }) => {
             setLoading(false)
         }
         checkAuthorization()
-        console.log("Private Route Effect called")
+        // console.log("Private Route Effect called")
     }, [])
 
     return (
