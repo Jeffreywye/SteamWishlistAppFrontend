@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from "react"
-import { Container, Button } from "react-bootstrap"
+import React, {useState, useEffect, useRef} from "react"
+import { Container, Button, Form, Row, Col} from "react-bootstrap"
 import {useAuth} from '../contexts/AuthContext'
 import { MDBDataTableV5, MDBBtn} from 'mdbreact'
 
@@ -9,6 +9,7 @@ const Wishlist = (props) => {
     const [_loading, setLoading] = useState(true)
     const {logout, getWishlist, remFromList, addToList  } = useAuth()
     const [_delete, setDelete] = useState(null)
+    const textRef = useRef()
 
     function handleLogout() {
         setError('')
@@ -20,7 +21,7 @@ const Wishlist = (props) => {
         }
     }
 
-    function toggleToSet(event){
+    async function toggleToSet(event){
         console.log(_data)
         console.log(event.target.attributes)
         var id = parseInt(event.target.attributes['data-id'].nodeValue, 10)
@@ -58,6 +59,28 @@ const Wishlist = (props) => {
             }]
         data['rows'] = []
         return data
+    }
+
+    async function handleSubmit(event){
+        event.preventDefault()
+        console.log("test")
+        try{
+            setError("")
+            setLoading(true)
+            
+            // let resp_json = await login(emailRef.current.value, passwordRef.current.value)
+            // if (resp_json["type"] === 'error'){
+            //     setError(resp_json['msg'])
+            // }
+            // else{
+            //     history.push('/wishlist')   
+            // }
+        }
+        catch (e){
+            // alert(e.message)
+            setError("Failed to add app")
+        }
+        setLoading(false)
     }
 
     useEffect (() =>{
@@ -98,7 +121,6 @@ const Wishlist = (props) => {
     }, [_delete])
     
 
-
     return (
         <Container>
             {_loading &&
@@ -106,12 +128,37 @@ const Wishlist = (props) => {
             }
             {!_loading && 
             <div>
+                <Container className="mt-5">
+                    <Row>
+                        <Col>
+                            <Button variant="link" onClick={handleLogout}>
+                                Log Out
+                            </Button>
+                        </Col>
+                        <Col>
+                            <Form onSubmit={handleSubmit}>
+                                <Form.Row>
+                                    <Col>
+                                        <Form.Group id="appID">
+                                            <Form.Control type="text" ref={textRef} required></Form.Control>
+                                        </Form.Group>
+                                    </Col>
+                                    <Col>
+                                        <Button 
+                                            className="w-100" 
+                                            type="submit"
+                                            >Add
+                                        </Button>
+                                    </Col>
+                                </Form.Row>
+                            </Form>
+                        </Col>
+                    </Row>
+                </Container>
+                 
                 <MDBDataTableV5
                     data={_data}
                 />
-                <Button variant="link" onClick={handleLogout}>
-                    Log Out
-                </Button>  
             </div>
             }
             
