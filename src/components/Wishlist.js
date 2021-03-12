@@ -22,9 +22,9 @@ const Wishlist = (props) => {
     }
 
     async function toggleToSet(event){
-        console.log(_data)
-        console.log(event.target.attributes)
         var id = parseInt(event.target.attributes['data-id'].nodeValue, 10)
+
+        let json = await remFromList(id)
         setDelete(id)
         setLoading(true)
     }
@@ -54,6 +54,9 @@ const Wishlist = (props) => {
                 field: 'discount',
                 sort: 'asc'
             },{
+                label: "Details",
+                field: 'detail'
+            },{
                 label: 'Remove',
                 field: "rem"
             }]
@@ -63,18 +66,22 @@ const Wishlist = (props) => {
 
     async function handleSubmit(event){
         event.preventDefault()
-        console.log("test")
         try{
             setError("")
             setLoading(true)
-            
-            // let resp_json = await login(emailRef.current.value, passwordRef.current.value)
-            // if (resp_json["type"] === 'error'){
-            //     setError(resp_json['msg'])
-            // }
-            // else{
-            //     history.push('/wishlist')   
-            // }
+            let json = await addToList(textRef.current.value)
+
+            if(json['status'] === true){
+                // let temp = {... _data}
+                json['data']['rem'] = <MDBBtn color='primary' onClick={toggleToSet} data-id={json['data']['appID']}>remove</MDBBtn>
+                json['data']['detail'] = <a href={"https://steamdb.info/app/"+json['data']['appID']}>link</a>
+                // temp['rows'].push(json['data'])
+                _data['rows'].push(json['data'])
+                // console.log(temp)
+            }
+            else{
+
+            }
         }
         catch (e){
             // alert(e.message)
@@ -91,10 +98,10 @@ const Wishlist = (props) => {
                 let data = createDataTemplate()
                 for (let i = 0; i < json['data'].length; i++) {
                     json['data'][i]['rem'] = <MDBBtn color='primary' onClick={toggleToSet} data-id={json['data'][i]['appID']}>remove</MDBBtn>
+                    json['data'][i]['detail'] = <a href={"https://steamdb.info/app/"+json['data'][i]['appID']}>link</a>
                 }
                 data['rows'] = json['data']
                 setData(data)
-                // console.log(data)
             }
             else {
 
@@ -105,10 +112,8 @@ const Wishlist = (props) => {
     }, [])
 
     useEffect (() => {
-        console.log("effect")
-        console.log(_data)
         if (_delete !== null){
-            console.log("must del " + _delete.toString())
+            // console.log("must del " + _delete.toString())
             let data = createDataTemplate()
             data['rows'] = _data['rows'].filter((val, index, arr) =>{
                 return _delete !== val['appID']

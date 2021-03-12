@@ -80,8 +80,6 @@ export function AuthProvider ( { children }) {
     async function verify(){
         const token = window.localStorage.getItem('accessToken')
         // console.log("Called Verify")
-        // console.log(_token)
-        // console.log(_id)
         // check if token is available
         if (token){
             let jwt_decode = decodeToken(token)
@@ -118,7 +116,6 @@ export function AuthProvider ( { children }) {
 
     async function getWishlist(){
         let url = "http://localhost:5000/api/getWishlist"
-        const token = window.localStorage.getItem('accessToken')
         let access = await verify()
         let ret = {}
         ret['status'] = false
@@ -135,30 +132,6 @@ export function AuthProvider ( { children }) {
             if (response.status == 200){
                 let json = await response.json()
                 ret['status'] = true
-                // let data = {}
-                // data['columns'] = [
-                //     {
-                //         label: 'Name',
-                //         field: 'name',
-                //         sort: 'asc'
-                //     },{
-                //         label: 'AppID',
-                //         field: 'appID',
-                //         sort: 'asc'
-                //     },{
-                //         label: 'Init Price',
-                //         field: 'init_price',
-                //         sort: 'asc'
-                //     },{
-                //         label: 'Price Now',
-                //         field: 'final_price',
-                //         sort: 'asc'
-                //     },{
-                //         label: 'Discount Percent',
-                //         field: 'discount',
-                //         sort: 'asc'
-                //     }]
-                // data['rows'] = json
                 ret['data'] = json
             }
             else{
@@ -169,12 +142,60 @@ export function AuthProvider ( { children }) {
         return ret
     }
     
-    async function remFromList(){
+    async function remFromList(appID){
+        let url = "http://localhost:5000/api/deleteFromWishlist"
+        let access = await verify()
+        let ret = {}
+        ret['status'] = false
+        ret['data'] = 'Failed to Delete'
 
+        if (access){
+            let response = await fetch(url ,{
+                method: 'DELETE',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer '+_token 
+                },
+                body: JSON.stringify({"appID": appID})
+            })
+
+            let json = await response.json()
+            ret['data'] = json
+            if (response.status === 200){
+                ret['status'] = true
+            }
+            
+        }
+        return ret
     }
 
-    async function addToList(){
+    async function addToList(appID){
+        let url = "http://localhost:5000/api/addToWishlist"
+        let access = await verify()
+        let ret = {}
+        ret['status'] = false
+        ret['data'] = 'Failed to POST'
 
+        if (access){
+            let response = await fetch(url ,{
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer '+_token 
+                },
+                body: JSON.stringify({"appID": appID})
+            })
+
+            let json = await response.json()
+            ret['data'] = json
+            if (response.status === 200){
+                ret['status'] = true
+            }
+            
+        }
+        return ret
     }
 
     useEffect (() =>{

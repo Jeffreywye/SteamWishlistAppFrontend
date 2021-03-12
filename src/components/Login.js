@@ -18,7 +18,6 @@ const Login = (props) => {
         try{
             setError("")
             setLoading(true)
-            console.log("b4 login")
             let resp_json = await login(emailRef.current.value, passwordRef.current.value)
             if (resp_json["type"] === 'error'){
                 setError(resp_json['msg'])
