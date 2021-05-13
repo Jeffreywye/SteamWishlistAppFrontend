@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useHistory } from "react-router-dom"
-import { MDBInput } from 'mdbreact';
+
+const {REACT_APP_API_URL} = process.env;
 
 const AuthContext = React.createContext()
 
@@ -21,7 +22,7 @@ export function AuthProvider ( { children }) {
    const history = useHistory()
    
     async function signup(email, password){
-        let url = "http://localhost:5000/api/signup"
+        let url = `${REACT_APP_API_URL}api/signup`
         let response = await fetch(url ,{
             method: 'POST',
             mode: 'cors',
@@ -35,7 +36,7 @@ export function AuthProvider ( { children }) {
     }
 
     async function login(email, password){
-        let url = "http://localhost:5000/api/login"
+        let url = `${REACT_APP_API_URL}api/login`
         let response = await fetch(url ,{
             method: 'POST',
             mode: 'cors',
@@ -62,7 +63,7 @@ export function AuthProvider ( { children }) {
     }
 
     async function refreshToken(token){
-        let url = "http://localhost:5000/token/refresh"
+        let url = `${REACT_APP_API_URL}token/refresh`
         let response = await fetch(url ,{
             method: 'POST',
             mode: 'cors',
@@ -115,7 +116,7 @@ export function AuthProvider ( { children }) {
     }
 
     async function getWishlist(){
-        let url = "http://localhost:5000/api/getWishlist"
+        let url = `${REACT_APP_API_URL}api/getWishlist`
         let access = await verify()
         let ret = {}
         ret['status'] = false
@@ -129,7 +130,7 @@ export function AuthProvider ( { children }) {
                     'Authorization': 'Bearer '+_token 
                 }
             })
-            if (response.status == 200){
+            if (response.status === 200){
                 let json = await response.json()
                 ret['status'] = true
                 ret['data'] = json
@@ -143,7 +144,7 @@ export function AuthProvider ( { children }) {
     }
     
     async function remFromList(appID){
-        let url = "http://localhost:5000/api/deleteFromWishlist"
+        let url = `${REACT_APP_API_URL}api/deleteFromWishlist`
         let access = await verify()
         let ret = {}
         ret['status'] = false
@@ -171,7 +172,7 @@ export function AuthProvider ( { children }) {
     }
 
     async function addToList(appID){
-        let url = "http://localhost:5000/api/addToWishlist"
+        let url = `${REACT_APP_API_URL}api/addToWishlist`
         let access = await verify()
         let ret = {}
         ret['status'] = false
